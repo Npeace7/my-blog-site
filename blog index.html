@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>My Blog</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background: #f9f9f9;
+    }
+    header {
+      background-color: #4CAF50;
+      color: white;
+      padding: 1rem 2rem;
+      text-align: center;
+      font-size: 1.5rem;
+    }
+    nav {
+      background: #333;
+      padding: 0.5rem;
+      text-align: center;
+    }
+    nav a {
+      color: white;
+      text-decoration: none;
+      margin: 0 1rem;
+      font-weight: bold;
+    }
+    nav a:hover {
+      text-decoration: underline;
+    }
+    .container {
+      max-width: 900px;
+      margin: 2rem auto;
+      padding: 1rem;
+      background: white;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+    .post {
+      margin-bottom: 2rem;
+      border-bottom: 1px solid #eee;
+      padding-bottom: 1rem;
+    }
+    .post h2 {
+      color: #333;
+    }
+    .post p {
+      color: #666;
+    }
+    footer {
+      background-color: #333;
+      color: white;
+      text-align: center;
+      padding: 1rem;
+      position: fixed;
+      bottom: 0;
+      width: 100%;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    Welcome to My Blogger Site
+  </header>
+  <nav>
+    <a href="#">Home</a>
+    <a href="#">About</a>
+    <a href="#">Contact</a>
+  </nav>
+  <div class="container" id="blog-posts">
+    <p>Loading posts...</p>
+  </div>
+  <footer>
+    &copy; 2025 My Blog. All rights reserved.
+  </footer>
+
+  <script>
+    // https://theeduren.blogspot.com
+    const blogFeed = 'https://example.blogspot.com/feeds/posts/default?alt=rss';
+
+    fetch(`https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(blogFeed)}`)
+      .then(res => res.json())
+      .then(data => {
+        const container = document.getElementById('blog-posts');
+        container.innerHTML = '';
+
+        if (data.items && Array.isArray(data.items)) {
+          data.items.forEach(post => {
+            const postDiv = document.createElement('div');
+            postDiv.className = 'post';
+            postDiv.innerHTML = `
+              <h2><a href="${post.link}" target="_blank">${post.title}</a></h2>
+              <p><strong>Published:</strong> ${new Date(post.pubDate).toDateString()}</p>
+              <p>${post.description.split("<img")[0]}</p>
+              <a href="${post.link}" target="_blank">Read More</a>
+            `;
+            container.appendChild(postDiv);
+          });
+        } else {
+          container.innerHTML = '<p>No blog posts found.</p>';
+        }
+      })
+      .catch(err => {
+        document.getElementById('blog-posts').innerHTML = '<p>Failed to load posts. Please check your RSS URL.</p>';
+        console.error(err);
+      });
+  </script>
+</body>
+</html>
